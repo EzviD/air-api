@@ -23,10 +23,6 @@ app.config['PROPAGATE_EXCEPTION'] = True
 app.config['SECRET_KEY'] = '*'
 app.config['JWT_SECRET_KEY'] = '*'
 
-@login_manager.user_loader
-def load_user(user_id):
-    return db.session.query(UserModel).get(user_id)
-
 api.add_resource(TimeableList, '/timetables')
 api.add_resource(Timetable, '/timetable')
 api.add_resource(PlaneList, '/planes')
