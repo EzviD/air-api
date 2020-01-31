@@ -68,7 +68,7 @@ class MakeDispatcher(Resource):
         if current_user.username == 'admin':
             data = MakeDispatcher.parser.parse_args()
             user = UserModel.query.filter_by(username=username).first()
-            if user and user.username != 'admin' and data['license'] in [1,2,3]:
+            if user and user.username != 'admin' and data['license'] in [0,1,2]:
                 user.license = data['license']
                 user.save_to_db()
                 return {'message':'Successfully updated.'}, 200
