@@ -1,5 +1,6 @@
 from app import app, login_manager
 from db import db
+from models.user import UserModel
 
 db.init_app(app)
 
