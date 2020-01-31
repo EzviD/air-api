@@ -23,10 +23,6 @@ app.config['PROPAGATE_EXCEPTION'] = True
 app.config['SECRET_KEY'] = '*'
 app.config['JWT_SECRET_KEY'] = '*'
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(UserModel).get(user_id)
