@@ -2,5 +2,6 @@ Flask
 Flask-RESTful
 Flask-Login
 Flask-JWT
-Flask-SQLALchemy 
+Flask-SQLALchemy
 uwsgi
+psycopg2
