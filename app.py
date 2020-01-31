@@ -17,7 +17,7 @@ api = Api(app)
 login_manager = LoginManager(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///'+os.path.join(basedir, 'data.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///'+os.path.join(basedir, 'data.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTION'] = True
 app.config['SECRET_KEY'] = '*'
