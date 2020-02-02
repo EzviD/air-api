@@ -113,7 +113,7 @@ class MakeDisp(Resource):
         if claims['is_admin']:
             data = MakeDisp.parser.parse_args()
             user = UserModel.query.filter_by(id=user_id).first()
-            if user and user.id != 0 and data['license'] in [0,1]:
+            if user and user.id != 1 and data['license'] in [0,1]:
                 user.license = data['license']
                 user.save_to_db()
                 return {'message':'Successfully updated.'}, 200
