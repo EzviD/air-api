@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.timetable import TimetableModel
-from flask_login import login_required, current_user
-from flask_jwt import jwt_required
+from models.user import UserModel
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 class Timetable(Resource):
     parser = reqparse.RequestParser()
@@ -32,9 +32,10 @@ class Timetable(Resource):
             return time.json()
         return {'message':'Timetable not found.'}, 404
 
-    #@jwt_required()
-    @login_required
+    @jwt_required
     def post(self):
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             data = Timetable.parser.parse_args()
             time = TimetableModel.query.filter_by(startpoint=data['startpoint'],
@@ -53,9 +54,10 @@ class Timetable(Resource):
                 return {"message": "An error occurred inserting the item."}, 500
         return {'message':'Access denied.'}, 403
 
-    #@jwt_required()
-    @login_required
+    @jwt_required
     def delete(self):
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             data = Timetable.parser.parse_args()
             time = TimetableModel.query.filter_by(startpoint=data['startpoint'],
@@ -67,7 +69,7 @@ class Timetable(Resource):
                 return {'message':'Successfully deleted.'}, 200
             return {'message':'Timetable not found.'}, 404
         return {'message':'Access denied.'}, 403
-        
+
 
 class TimeableList(Resource):
     def get(self):

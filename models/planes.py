@@ -23,6 +23,10 @@ class PlaneModel(db.Model):
     def find_plane(cls, name, tag):
         return cls.query.filter_by(name=name, airoport_tag=tag).first()
 
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()

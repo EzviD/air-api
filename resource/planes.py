@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.planes import PlaneModel
-from flask_jwt import jwt_required
-from flask_login import login_required, current_user
+from models.user import UserModel
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 class Plane(Resource):
     parser = reqparse.RequestParser()
@@ -18,9 +18,10 @@ class Plane(Resource):
             return plane.json()
         return {'message':"Plane not found."}, 404
 
-    #@jwt_required()
-    @login_required
+    @jwt_required
     def post(self, name):
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             data = Plane.parser.parse_args()
 
@@ -34,9 +35,10 @@ class Plane(Resource):
                 return {"message": "An error occurred inserting the item."}, 500
         return {'message':'Access denied.'}, 403
 
-    #@jwt_required()
-    @login_required
+    @jwt_required
     def delete(self, name):
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             plane = PlaneModel.query.filter_by(name=name).first()
 
@@ -46,12 +48,13 @@ class Plane(Resource):
             return {'message':'Plane not found.'}, 404
         return {'message':'Access denied.'}, 403
 
-    #@jwt_required()
-    @login_required
+    @jwt_required
     def put(self, name):
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             data = Plane.parser.parse_args()
-            plane = PlaneModel.find_plane(name, data['airoport_tag'])
+            plane = PlaneModel.find_by_name(name)
 
             if plane:
                 plane.airoport_tag = data['airoport_tag']

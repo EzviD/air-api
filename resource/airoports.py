@@ -1,7 +1,6 @@
 from flask_restful import Resource, reqparse
 from models.airoports import AiroportsModel
-from flask_jwt import jwt_required
-from flask_login import login_required, current_user
+from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity, get_jwt_claims
 
 class Airoport(Resource):
     def get(self, country, city, tag):
@@ -11,10 +10,10 @@ class Airoport(Resource):
             return airoport.json()
         return {'message':'Airoport not found'}, 404
 
-    #@jwt_required()
-    @login_required
+    @jwt_required
     def post(self, country, city, tag):
-        if current_user.username == 'admin':
+        claims = get_jwt_claims()
+        if claims['is_admin']:
             if AiroportsModel.find_airoport(country,city,tag):
                 return {'message':'Airoport already exists.'}, 400
             try:
@@ -25,10 +24,10 @@ class Airoport(Resource):
                 return {"message": "An error occurred inserting the item."}, 500
         return {'message':'Access denied.'}, 403
 
-    #@jwt_required()
-    @login_required
+    @fresh_jwt_required
     def delete(self, country, city, tag):
-        if current_user.username == 'admin':
+        claims = get_jwt_claims()
+        if claims['is_admin']:
             airoport = AiroportsModel.find_airoport(country,city,tag)
 
             if airoport:
