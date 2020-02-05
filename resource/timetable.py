@@ -7,7 +7,7 @@ class Timetable(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('startpoint',
                         type=str,
-                        required=True,
+                        required=False,
                         help='This field cannot be blank.')
     parser.add_argument('endpoint',
                         type=str,
@@ -24,7 +24,11 @@ class Timetable(Resource):
 
     def get(self):
         data = Timetable.parser.parse_args()
-        time = TimetableModel.query.filter_by(startpoint=data['startpoint'],
+        if data['startpoint']:
+            startpoint = data['startpoint']
+        else:
+            startpoint = TimetableModel.find_plane_airoport(data['plane_name'])
+        time = TimetableModel.query.filter_by(startpoint=startpoint,
         endpoint=data['endpoint'],departure_time=data['departure_time'],
         plane_name=data['plane_name']).first()
 
@@ -38,14 +42,18 @@ class Timetable(Resource):
         current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             data = Timetable.parser.parse_args()
-            time = TimetableModel.query.filter_by(startpoint=data['startpoint'],
+            if data['startpoint']:
+                startpoint = data['startpoint']
+            else:
+                startpoint = TimetableModel.find_plane_airoport(data['plane_name'])
+            time = TimetableModel.query.filter_by(startpoint=startpoint,
             endpoint=data['endpoint'],departure_time=data['departure_time'],
             plane_name=data['plane_name']).first()
 
             if time:
                 return {'message':'This timetable already exists.'}, 400
             try:
-                time = TimetableModel(startpoint=data['startpoint'],
+                time = TimetableModel(startpoint=startpoint,
                 endpoint=data['endpoint'],departure_time=data['departure_time'],
                 plane_name=data['plane_name'])
                 time.save_to_db()
@@ -60,7 +68,11 @@ class Timetable(Resource):
         current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
             data = Timetable.parser.parse_args()
-            time = TimetableModel.query.filter_by(startpoint=data['startpoint'],
+            if data['startpoint']:
+                startpoint = data['startpoint']
+            else:
+                startpoint = TimetableModel.find_plane_airoport(data['plane_name'])
+            time = TimetableModel.query.filter_by(startpoint=startpoint,
             endpoint=data['endpoint'],departure_time=data['departure_time'],
             plane_name=data['plane_name']).first()
 

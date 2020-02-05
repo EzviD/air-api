@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identit
 
 class Airoport(Resource):
     def get(self, country, city, tag):
-        airoport = AiroportsModel.find_airoport(country,city,tag)
+        airoport = AiroportsModel.find_airoport(tag)
 
         if airoport:
             return airoport.json()
@@ -14,7 +14,7 @@ class Airoport(Resource):
     def post(self, country, city, tag):
         claims = get_jwt_claims()
         if claims['is_admin']:
-            if AiroportsModel.find_airoport(country,city,tag):
+            if AiroportsModel.find_airoport(tag):
                 return {'message':'Airoport already exists.'}, 400
             try:
                 airoport = AiroportsModel(country,city,tag)
@@ -28,7 +28,7 @@ class Airoport(Resource):
     def delete(self, country, city, tag):
         claims = get_jwt_claims()
         if claims['is_admin']:
-            airoport = AiroportsModel.find_airoport(country,city,tag)
+            airoport = AiroportsModel.find_airoport(tag)
 
             if airoport:
                 airoport.delete_from_db()

@@ -36,8 +36,8 @@ class UserRegister(Resource):
                 user = UserModel(data['username'],data['password'],2)
             else:
                 user = UserModel(data['username'],data['password'],0)
-                user.save_to_db()
-                return {'message':'Successfully created.'}, 201
+            user.save_to_db()
+            return {'message':'Successfully created.'}, 201
         except:
             return {"message": "An error occurred inserting the item."}, 500
 
@@ -55,7 +55,7 @@ class LoginUser(Resource):
 
     def post(self):
         data = LoginUser.parser.parse_args()
-        user = UserModel.query.filter_by(username=data['username']).first()
+        user = UserModel.find_by_username(data['username'])
         if user and user.check_pass(data['password']):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
@@ -63,6 +63,7 @@ class LoginUser(Resource):
                 'access_token':access_token,
                 'refresh_token':refresh_token
             }, 200
+        return {'message':'Unable to login.'}, 401
 
 class LogoutUser(Resource):
     @jwt_required
@@ -125,4 +126,5 @@ class TokenRefresh(Resource):
     def post(self):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh=False)
-        return {'access_token': new_token}
+        new_refresh_token = create_refresh_token(current_user)
+        return {'access_token': new_token, 'refresh_token': new_refresh_token}

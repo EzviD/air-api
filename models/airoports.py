@@ -19,8 +19,8 @@ class AiroportsModel(db.Model):
         return {'country':self.country, 'city':self.city,'tag':self.tag,'planes':[plane.json() for plane in self.planes.all()]}
 
     @classmethod
-    def find_airoport(cls, country, city, tag):
-        return cls.query.filter_by(country=country).filter_by(city=city).filter_by(tag=tag).first()
+    def find_airoport(cls, tag):
+        return cls.query.filter_by(tag=tag).first()
 
     def save_to_db(self):
         db.session.add(self)

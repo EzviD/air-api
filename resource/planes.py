@@ -1,18 +1,18 @@
 from flask_restful import Resource, reqparse
 from models.planes import PlaneModel
 from models.user import UserModel
+from models.airoports import AiroportsModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 class Plane(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('airoport_tag',
-                        type=str,
-                        required=True,
-                        help='This field cannot be blank.')
+                    type=str,
+                    required=True,
+                    help='This field cannot be blank.')
 
     def get(self, name):
-        data = Plane.parser.parse_args()
-        plane = PlaneModel.find_plane(name, data['airoport_tag'])
+        plane = PlaneModel.find_by_name(name)
 
         if plane:
             return plane.json()
@@ -25,7 +25,7 @@ class Plane(Resource):
         if current_user.license in [1,2]:
             data = Plane.parser.parse_args()
 
-            if PlaneModel.find_plane(name, data['airoport_tag']):
+            if PlaneModel.find_by_name(name):
                 return {'message':'Plane already exists'}, 400
             plane = PlaneModel(name, data['airoport_tag'])
             try:
@@ -40,7 +40,7 @@ class Plane(Resource):
         user_id = get_jwt_identity()
         current_user = UserModel.find_by_id(user_id)
         if current_user.license in [1,2]:
-            plane = PlaneModel.query.filter_by(name=name).first()
+            plane = PlaneModel.find_by_name(name)
 
             if plane:
                 plane.delete_from_db()
@@ -57,7 +57,10 @@ class Plane(Resource):
             plane = PlaneModel.find_by_name(name)
 
             if plane:
-                plane.airoport_tag = data['airoport_tag']
+                if AiroportsModel.find_airoport(data['airoport_tag']) is not None:
+                    plane.airoport_tag = data['airoport_tag']
+                else:
+                    return {'message':"This tag doesn't exist."}, 404
             else:
                 plane = PlaneModel(name, data['airoport_tag'])
 

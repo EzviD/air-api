@@ -1,4 +1,6 @@
 from db import db
+from models.planes import PlaneModel
+from models.airoports import AiroportsModel
 
 class TimetableModel(db.Model):
     __tablename__ = 'timetable'
@@ -27,6 +29,12 @@ class TimetableModel(db.Model):
     @classmethod
     def find_timetable(cls, startpoint, endpoint, departure_time):
         return cls.query.filter_by(startpoint=startpoint, endpoint=endpoint, departure_time=departure_time).first()
+
+    @classmethod
+    def find_plane_airoport(cls, plane_name):
+        plane = PlaneModel.find_by_name(plane_name)
+        airoport = AiroportsModel.find_airoport(plane.airoport_tag)
+        return airoport.city
 
     def save_to_db(self):
         db.session.add(self)

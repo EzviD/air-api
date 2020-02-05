@@ -2,6 +2,8 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from models.user import UserModel
 from blacklist import BLACKLIST
@@ -14,6 +16,11 @@ app = Flask(__name__)
 jwt = JWTManager(app)
 api = Api(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=['2 per second']
+)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///'+os.path.join(basedir, 'data.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
