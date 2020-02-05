@@ -19,7 +19,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=['2 per second']
+    default_limits=['1000 per day']
 )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///'+os.path.join(basedir, 'data.db'))
